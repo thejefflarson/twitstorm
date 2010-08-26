@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title>
+      TWIT STORM
+    </title>
+
+    <link href="http://a1.twimg.com/a/1282785354/stylesheets/twitter.css?1282845704" media="screen" rel="stylesheet" type="text/css" />
+    <link href="http://a1.twimg.com/a/1282785354/stylesheets/geo.css?1282845704" media="screen" rel="stylesheet" type="text/css" />
+    <link href="http://a1.twimg.com/a/1282785354/stylesheets/buttons_new.css?1282845704" media="screen" rel="stylesheet" type="text/css" />
+    <script src="http://documentcloud.github.com/underscore/underscore.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var conn;
+      var connect = function(){
+        if(!WebSocket) return;
+        conn = new WebSocket("ws://localhost:9147/");
+        conn.onmessage = function(evt){
+          try{
+            var data = JSON.parse(evt.data);
+          } catch(e) { console.log(e); return; }
+          if(!_.isUndefined(data.track)) {
+            $("#current").text("Currently Tracking " + data.track);
+            return;
+          } else {
+            $("#content").html(template(data));
+            $("body").css({
+              "background-color": "#" + data.user.profile_background_color
+            });
+          }
+        }
+        conn.onerror = function(e){
+          console.log(e)
+        }
+        conn.onclose = function(e) {
+          console.log("closed?", e)
+          
+          conn = false;
+        };
+      }
+      
+      $(function(){
+        window.template = _.template($("#template").html());
+        $("#hashtag").submit(function(e){
+          e.preventDefault();
+          var track = $("#hashtag").children("input").attr("value");
+          if(!conn) connect();
+          conn.send(JSON.stringify({track:track}));
+        });
+        connect();
+      });
+    </script>
+  </head>
+  <body class="status" id="show">
+    <h1 id="current"></h1>
+    <form id="hashtag"><input type="search"></form>
+    <div id="container">
+      <span id="loader" style="display:none"><img alt="Loader" src="http://a0.twimg.com/a/1282785354/images/loader.gif"></span>
+      <div class="clearfix" id="header">
+        <a href="http://twitter.com/" title="Twitter / Home" accesskey="1" id="logo" name="logo"><img alt="Twitter.com" height="36" src="http://a0.twimg.com/a/1282785354/images/twitter_logo_header.png" width="155"></a>
+      </div>
+      <div id="content" class="wide"></div>
+    <script type="text/jst" id="template">
+        <div class="wrapper">
+          <div id="permalink" class="status">
+            <div class="hentry share status">
+              <span class="status-body">
+                <%= text %>
+              </span> 
+            </div>
+            <div class="user-info clear">
+              <div class="thumb">
+                <a href="http://twitter.com/<%= user.screen_name %>" class="tweet-url profile-pic">
+                <img alt="" border="0" height="73" src="<%= user.profile_image_url %>" style="vertical-align:middle" width="73">
+                </a>
+              </div>
+              <div class="">
+                <a href="http://twitter.com/<%= user.screen_name %>" class="tweet-url screen-name" title="<%= user.name %>"><%= user.screen_name %></a>
+              </div>
+              <div class="full-name">
+                <%= user.name %>
+              </div>
+            </div>
+          </div>
+        </div>
+    </script>
+    
+    </div>
+  </body>
+</html>
