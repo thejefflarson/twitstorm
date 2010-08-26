@@ -1,5 +1,3 @@
-console.log(require.paths, process.env)
-
 var ws           = require("websocket-server"),
     TwitterNode  = require("twitter-node").TwitterNode,
     fs           = require("fs"),
