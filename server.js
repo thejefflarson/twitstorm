@@ -1,8 +1,9 @@
 var ws           = require("websocket-server"),
     TwitterNode  = require("twitter-node").TwitterNode,
     fs           = require("fs"),
+    path         = require("path"),
     EventEmitter = require('events').EventEmitter,
-    config       = JSON.parse(fs.readFileSync(__dirname + "/config.json")),
+    config       = JSON.parse(fs.readFileSync(process.env.HOME + "/.config.ws.json")),
     socket       = ws.createServer()
 ;
 
@@ -13,7 +14,7 @@ var Tracker = function(keyword){
     password: config.password
   });
   twit.action = 'filter';
-  twit.headers['User-Agent'] = 'Firefox 0.0.1';
+  twit.headers['User-Agent'] = 'TwitStorm 0.0.1';
   var that = this;
   twit.on('tweet', function(tweet){
     that.emit('tweet', tweet);
