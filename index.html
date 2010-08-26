@@ -14,7 +14,7 @@
       var conn;
       var connect = function(){
         if(!WebSocket) return;
-        conn = new WebSocket("ws://localhost:8080/");
+        conn = new WebSocket("ws://http://owenist-songlet.no.de:80/");
         conn.onmessage = function(evt){
           try{
             var data = JSON.parse(evt.data);
