@@ -26,7 +26,8 @@ var Tracker = function(keyword){
       console.log("error");
     })
     .stream();
-}
+};
+
 Tracker.prototype = Object.create(EventEmitter.prototype);
 
 Tracker.prototype.track = function(data){
@@ -39,11 +40,11 @@ Tracker.prototype.track = function(data){
     socket.broadcast(JSON.stringify(data));
     this.twit.stream();
   }
-}
+};
 
 Tracker.prototype.current = function(json){
   tracker.currentTweet = json;
-}
+};
 
 var tracker = new Tracker("google");
 
@@ -53,8 +54,8 @@ socket.on('connection', function(conn){
     tracker.track(message);
   });
   conn.on('close', function(){
-    console.log('closed connection')
-  })
+    console.log('closed connection');
+  });
   conn.write(JSON.stringify(tracker.tracking));
   if(tracker.currentTweet) conn.write(tracker.currentTweet);
 });
