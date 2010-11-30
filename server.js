@@ -48,7 +48,7 @@ Tracker.prototype.current = function(json){
 
 var tracker = new Tracker("google");
 
-socket.listen(config.ws.port, config.ws.host);
+socket.listen(process.env.PORT, config.ws.host);
 socket.on('connection', function(conn){
   conn.on('message', function(message){
     tracker.track(message);
